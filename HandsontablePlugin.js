@@ -1,5 +1,5 @@
 /***
-|Description |Brings Handsontable spreadsheets into ~TiddlyWiki classic|
+|Description |Create spreadsheet-like tables with inline editing and keyboard hotkeys for manipulating rows and columns|
 |Docs        |http://yakovlitvin.pro/TW/pre-releases/Spreadsheets.html|
 |Source      |http://yakovlitvin.pro/TW/pre-releases/Spreadsheets.html#HandsontablePlugin|
 |Author      |Yakov Litvin|
