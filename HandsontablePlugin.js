@@ -339,7 +339,7 @@ else
 		// add rows/columns on going beyond boundaries (by down/right)
 		if(isLastRow) {
 			if(event.which == $down) {
-				this.alter('insert_row',endRowNum+1);
+				this.alter('insert_row', endRowNum + 1);
 				wasChanged = true;
 			}
 			if(event.which == $up && !isFirstRow) {
@@ -356,7 +356,7 @@ else
 		}
 		if(isLastCol) {
 			if(event.which == $right) {
-				this.alter('insert_col',endColNum+1);
+				this.alter('insert_col', endColNum + 1);
 				wasChanged = true;
 			}
 			if(event.which == $left && !isFirstCol) {
@@ -374,23 +374,23 @@ else
 
 		// handle inserting/deleting rows in the middle
 		var $i = 73, $enter = 13, $delete = 46,
-			minSelRow	= Math.min(startRowNum,endRowNum),
-			maxSelRow	= Math.max(startRowNum,endRowNum);
+			minSelRow	= Math.min(startRowNum, endRowNum),
+			maxSelRow	= Math.max(startRowNum, endRowNum);
 		if(event.which == $i && event.ctrlKey && !event.shiftKey) {
 			this.alter('insert_row',minSelRow);
-			this.selectCell(minSelRow,startColNum,minSelRow,endColNum);
+			this.selectCell(minSelRow, startColNum, minSelRow, endColNum);
 			wasChanged = true;
 			preventDefault = true;
 		}
 		if(event.which == $enter && event.ctrlKey) {
-			this.alter('insert_row',maxSelRow+1);
-			this.selectCell(maxSelRow+1,startColNum,maxSelRow+1,endColNum);
+			this.alter('insert_row', maxSelRow+1);
+			this.selectCell(maxSelRow+1, startColNum, maxSelRow+1, endColNum);
 			wasChanged = true;
 			preventDefault = true;
 		}
 		if(event.which == $delete && event.ctrlKey) {
-			for(var j = 0; j < maxSelRow-minSelRow+1; j++)
-				this.alter('remove_row',minSelRow);
+			for(var j = 0; j < maxSelRow - minSelRow+1; j++)
+				this.alter('remove_row', minSelRow);
 			wasChanged = true;
 			preventDefault = true;
 		}
@@ -400,9 +400,9 @@ else
 		var $home = 36, $end = 35;
 		if(event.ctrlKey) {
 			var shift = event.which == $down ? +1
-					: event.which == $up ?   -1
+					: event.which == $up   ? -1
 					: event.which == $home ? -minSelRow
-					: event.which == $end ?   data.length-1 - maxSelRow
+					: event.which == $end  ?  data.length-1 - maxSelRow
 					: 0;
 			// prevent shifting to negative indices
 			while(minSelRow + shift < 0)
@@ -426,7 +426,7 @@ else
 				wasChanged = true;
 
 				// move selection as well
-				this.selectCell(startRowNum+shift,startColNum, endRowNum+shift,endColNum);
+				this.selectCell(startRowNum + shift, startColNum, endRowNum+shift, endColNum);
 				preventDefault = true;
 			}
 		}
@@ -646,12 +646,12 @@ if(!handsontable) console.log("filter is ",filter,", containers are ",containers
 //  http://stackoverflow.com/questions/18302890/json-stringify-input-values-as-numbers
 //  and also turn nulls into ""
 
-		return JSON.stringify(data,"",4)
-			.replace(/\n {8}([^\n]*)\n {4}\]/gm,function($0,$1){
-				return $1+"]";
+		return JSON.stringify(data, "", 4)
+			.replace(/\n {8}([^\n]*)\n {4}\]/gm, function($0, $1){
+				return $1 + "]";
 			})
-			.replace(/\n {8}/gm,"")
-			.replace(/^ {4}/gm,"\t");
+			.replace(/\n {8}/gm, "")
+			.replace(/^ {4}/gm, "\t");
 	},
 	saveToTiddler: function(change,source)
 	{
@@ -875,7 +875,7 @@ Tiddler.prototype.setHiddenSection = function(sectionName,value)
 // %/ //
 //{{{
 var cssName = "handsontable.min.css",
-	css = store.getTiddlerText("HandsontablePlugin"+"##"+cssName).replace(/^\/\//gm,"");
+	css = store.getTiddlerText("HandsontablePlugin" + "##" + cssName).replace(/^\/\//gm, "");
 css = css.substring(4,css.length-4); // cut leading ***/ and trailing /*** of the section
 config.shadowTiddlers[cssName] = css;
 store.addNotification(cssName, refreshStyles);
