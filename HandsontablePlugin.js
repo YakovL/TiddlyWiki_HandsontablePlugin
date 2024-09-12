@@ -1,7 +1,7 @@
 /***
 |Description |Create spreadsheet-like tables with inline editing and keyboard hotkeys for manipulating rows and columns|
-|Docs        |http://yakovlitvin.pro/TW/pre-releases/Spreadsheets.html|
-|Source      |http://yakovlitvin.pro/TW/pre-releases/Spreadsheets.html#HandsontablePlugin|
+|Docs        |https://yakovl.github.io/TiddlyWiki_HandsontablePlugin/|
+|Source      |https://github.com/YakovL/TiddlyWiki_HandsontablePlugin/blob/master/HandsontablePlugin.js|
 |Author      |Yakov Litvin|
 |Version     |0.3.7|
 |Status      |Stable, useful enough to use in production, but needs some improvements|
