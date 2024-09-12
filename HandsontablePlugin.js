@@ -874,9 +874,11 @@ Tiddler.prototype.setHiddenSection = function(sectionName,value)
 ***/
 // %/ //
 //{{{
+;(function() {
 var cssName = "handsontable.min.css",
 	css = store.getTiddlerText("HandsontablePlugin" + "##" + cssName).replace(/^\/\//gm, "");
-css = css.substring(4,css.length-4); // cut leading ***/ and trailing /*** of the section
+css = css.substring(5, css.length - 5); // cut leading \n***/ and trailing /***\n of the section
 config.shadowTiddlers[cssName] = css;
 store.addNotification(cssName, refreshStyles);
+})();
 //}}}
