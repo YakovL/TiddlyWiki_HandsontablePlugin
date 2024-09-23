@@ -39,9 +39,9 @@ and after creating some columns and rows and writing some data you may have some
 * if you use the old approach from Vincent's v0.0.1, you can adapt your data to the new format (macro + section for data and options, see below) or just copy-paste your data. In current version backward compability code is present, but it is deprecated and will be removed at some point.
 There are some additional features available by hotkeys:
 * //in tables for non-granulated data// you can
-** press {{{ctrl+delete}}} to delete rows that contain selected cells
-** {{{ctrl+i}}} to insert a row before and {{{ctrl+enter}}} to insert a row after the selected cells
-** {{{ctrl+up/down/home/end}}} to move rows with selected cells up and down
+** press {{{ctrl + delete}}} to delete rows that contain selected cells; {{{ctrl + shift + delete}}} for columns
+** {{{ctrl + i}}} to insert a row before and {{{ctrl + enter}}} to insert a row after the selected cells ({{{+ shift}}} for columns)
+** {{{ctrl + up/down/home/end}}} to move rows with selected cells up and down
 
 !!! Macro syntax
 the simplest syntax is the following:
@@ -372,25 +372,42 @@ else
 			}
 		}
 
-		// handle inserting/deleting rows in the middle
+		// handle inserting/deleting rows/columns in the middle
 		var $i = 73, $enter = 13, $delete = 46,
-			minSelRow	= Math.min(startRowNum, endRowNum),
-			maxSelRow	= Math.max(startRowNum, endRowNum);
-		if(event.which == $i && event.ctrlKey && !event.shiftKey) {
-			this.alter('insert_row',minSelRow);
-			this.selectCell(minSelRow, startColNum, minSelRow, endColNum);
+		    minSelRow = Math.min(startRowNum, endRowNum),
+		    maxSelRow = Math.max(startRowNum, endRowNum),
+		    minSelCol = Math.min(startColNum, endColNum),
+		    maxSelCol = Math.max(startColNum, endColNum);
+		var shouldApplyToRows = !event.shiftKey;
+		if(event.which == $i && event.ctrlKey) {
+			if(shouldApplyToRows) {
+				this.alter('insert_row', minSelRow);
+				this.selectCell(minSelRow, startColNum, minSelRow, endColNum);
+			} else {
+				this.alter('insert_col', minSelCol);
+				this.selectCell(startRowNum, minSelCol, endRowNum, minSelCol);
+			}
 			wasChanged = true;
 			preventDefault = true;
 		}
 		if(event.which == $enter && event.ctrlKey) {
-			this.alter('insert_row', maxSelRow+1);
-			this.selectCell(maxSelRow+1, startColNum, maxSelRow+1, endColNum);
+			if(shouldApplyToRows) {
+				this.alter('insert_row', maxSelRow + 1);
+				this.selectCell(maxSelRow + 1, startColNum, maxSelRow + 1, endColNum);
+			} else {
+				this.alter('insert_col', minSelCol + 1);
+				this.selectCell(startRowNum, maxSelCol + 1, endRowNum, maxSelCol + 1);
+			}
 			wasChanged = true;
 			preventDefault = true;
 		}
 		if(event.which == $delete && event.ctrlKey) {
-			for(var j = 0; j < maxSelRow - minSelRow+1; j++)
-				this.alter('remove_row', minSelRow);
+			if(shouldApplyToRows)
+				for(var j = 0; j < maxSelRow - minSelRow+1; j++)
+					this.alter('remove_row', minSelRow);
+			else
+				for(var j = 0; j < maxSelCol - minSelCol+1; j++)
+					this.alter('remove_col', minSelCol);
 			wasChanged = true;
 			preventDefault = true;
 		}
