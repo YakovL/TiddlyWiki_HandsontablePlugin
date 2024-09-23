@@ -558,6 +558,130 @@ body {font-size:0.8em;}
 <div title="DefaultTiddlers" modifier="Yakov Litvin" created="201705251944" modified="201705251944" changecount="2">
 <pre>[[HandsontablePlugin]]</pre>
 </div>
+<div title="Handsontable Demo" modifier="Yakov Litvin" created="201702241326" modified="201710030842" changecount="166">
+<pre>with {{{&quot;colHeaders&quot;: false}}}:
+&lt;&lt;handsontable [[##data2]]&gt;&gt;
+merging cells, with {{{&quot;rowHeaders&quot;: true}}} and {{{colWidths}}} set (all in the storage section)
+&lt;&lt;handsontable [[##data3]]&gt;&gt;/%
+!data2
+{&quot;data&quot;:[
+	[&quot;yy&quot;,&quot;Ford&quot;,&quot;Volvo&quot;,&quot;Toyota&quot;,&quot;Honda&quot;],
+	[&quot;2014&quot;,10,11,&quot;12&quot;,13],
+	[&quot;2015&quot;,&quot;22&quot;,11,14,&quot;15&quot;],
+	[&quot;2016&quot;,30,15,12,&quot;and they don't know what for&quot;]
+],
+&quot;options&quot;:{
+	&quot;colHeaders&quot;: false
+}}
+!data3
+{&quot;data&quot;:[
+	[&quot;пт, 7.04&quot;,&quot;19:10, 21:40, 23:20 (700,700,450)&quot;,null,null,null],
+	[&quot;сб, 8.04&quot;,&quot;18:20,22:30 (700,400)&quot;,&quot;&quot;,null,null],
+	[&quot;вс, 9.04&quot;,&quot;13:40,18:15,20:30(350,700,700)&quot;,&quot;&quot;,null,null],
+	[&quot;пн, 10.04&quot;,&quot;19:10 (300)&quot;,null,null,null],
+	[&quot;вт, 11.04&quot;,&quot;~&quot;,null,null,null],
+	[&quot;ср, 12.04&quot;,&quot;21:40 (300)&quot;,null,null,null],
+	[&quot;пт, 14.04&quot;,&quot;23:20 (450)&quot;,null,null,null],
+	[&quot;сб, 15.04&quot;,&quot;22:00 (450)&quot;,null,null,null],
+	[&quot;вс, 16.04&quot;,&quot;15:45 (350)&quot;,null,null,null],
+	[&quot;прочие см тут: https://msk.subscity.ru/movies/36035-ghost-in-the-shell&quot;,&quot;&quot;,null,null,null],
+	[&quot;/про проблему с colWidth: https://github.com/handsontable/handsontable/issues/3171, workaround: http://jsfiddle.net/7u1kxjLe/16/&quot;,null,null,null,null]
+],
+&quot;options&quot;:{
+	&quot;mergeCells&quot;: [{    &quot;row&quot;: 9,    &quot;col&quot;: 0,    &quot;rowspan&quot;: 1,    &quot;colspan&quot;: 5},{    &quot;row&quot;: 10,    &quot;col&quot;: 0,    &quot;rowspan&quot;: 1,    &quot;colspan&quot;: 5}],
+	&quot;colWidths&quot;: [100,250,0,0,0],
+	&quot;rowHeaders&quot;: true
+}}
+!
+!%/
+{{{data}}} param {{PoGc{seems rather useless, learn how to set read-only}}}:
+&lt;&lt;handsontable data:'[
+	[&quot;xx&quot;, &quot;Ford&quot;, &quot;Volvo&quot;, &quot;Toyota&quot;, &quot;Honda&quot;],
+	[&quot;2014&quot;, 10, &quot;14&quot;, &quot;13&quot;, &quot;&quot;],
+	[&quot;2015&quot;, 20, &quot;12&quot;, &quot;14&quot;, &quot;13&quot;],
+	[&quot;2016&quot;, 30, &quot;&quot;, &quot;12&quot;, &quot;22&quot;]
+]'&gt;&gt;
+storing to SomeTiddler tiddler:
+&lt;&lt;handsontable [[SomeTiddler]]&gt;&gt;
+no params (for now, won't save):
+&lt;&lt;handsontable&gt;&gt;
+column headers (using {{{colHeaders}}}; see {{DDn{problems when adding new columns}}}), row headers (why {{DDn{3d row header is cut off}}}?), custom renderer to wikify only the 2d column:
+&lt;&lt;handsontable [[##some section]] options:'{
+	colHeaders: [&quot;custom title&quot;],
+	rowHeaders: [&quot;text&quot;,&quot;&lt;i&gt;html&lt;/i&gt;&quot;,&quot;//wikified?//&quot;],
+	renderer: function (instance, td, row, col, prop, value, cellProperties)
+	{
+		if(col == 1)
+			config.macros.handsontable.wikifiedRenderer.apply(this,arguments);
+		else if(col == 2)
+				Handsontable.renderers.CheckboxRenderer.apply(this,arguments);
+		else
+			Handsontable.renderers.TextRenderer.apply(this,arguments);
+	}
+}'&gt;&gt;/%
+!some section
+{&quot;data&quot;:[
+	[&quot;custom /%%\/titles&quot;,&quot;''work!''&quot;,null],
+	[null,null,null],
+	[&quot;&quot;,&quot;{{DDn{but are not wikified yet}}}&quot;,null],
+	[&quot;&quot;,&quot;{{DDn{and creating new columns corrupts titles}}}&quot;,null],
+	[&quot;usage of the {{{columns}}} option&quot;,&quot;prevents us from creating new columns, so using {{{colHeaders}}} is preferable for setting column titles&quot;,null],
+	[&quot;&quot;,&quot;and a nice way to set different renderers for different columns is to use a custom renderer&quot;,null]
+],
+&quot;options&quot;:{}}
+!%/
+!!!Custom renderer tests
+3d colomn is wikified:
+&lt;&lt;handsontable [[##test1]] options:'{columns: [{},{},{renderer: this.wikifiedRenderer}]}'&gt;&gt;/%
+!test1
+{&quot;data&quot;:[
+	[1,&quot;//wikified?//&quot;,&quot;|3|4|5|6|7|8|&quot;],
+	[2,3,&quot;this ''works!'' +++[how about..]some slider?===&quot;],
+	[3,4,&quot;this is implemented using [[HandsontablePlugin]] ([[an external link|http://yakovl.bplaced.net/TW/Spreadsheets.html]] to the repo)&quot;],
+	[null,null,&quot;{{DDn{with only 3d column wikified, new columns are not added on pressing right from here!}}}&quot;]
+],
+&quot;options&quot;:{}}
+!%/
+all columns are wikified, same data {{DDnc{one table isn't updated properly by another}}}:
+&lt;&lt;handsontable [[##test1]] wikified&gt;&gt;
+a custom renderer that uses other renderers, depending on column and row {{DDnc{investigate why a column added here for the checkbox renderer is not saved}}}:
+&lt;&lt;handsontable [[##test1]] options:'{
+	renderer: function (instance, td, row, col, prop, value, cellProperties)
+	{
+		if((col == 2 &amp;&amp; row != 3) || (col == 1 &amp;&amp; row == 0))
+			return config.macros.handsontable.wikifiedRenderer.apply(this,arguments);
+		else if(col == 3)
+			return Handsontable.renderers.CheckboxRenderer.apply(this,arguments);
+		else
+			return Handsontable.renderers.TextRenderer.apply(this,arguments);
+	}
+}'&gt;&gt;
+You may also consult the source code (see {{{wikifiedRenderer}}}) to learn how to define a renderer (which may be done inline in macro params like in the handsontable above)
+!!!Dropdowns
+&lt;&lt;handsontable [[##dropdowns-test]]
+	options:&quot;{ columns: [
+		{ renderer: this.wikifiedRenderer },
+		{type: 'numeric'},
+		{
+		type: 'dropdown',
+		source: ['task', 'test', 'pager', 'video']
+		},
+		{
+		type: 'autocomplete', strict: true, filter: false, // same as dropdown
+		source: ['yellow', 'red', 'orange', 'green', 'blue', 'gray', 'black', 'white']
+		}
+	] }&quot;
+&gt;&gt;/%
+!dropdowns-test
+{&quot;data&quot;:[
+	[&quot;&quot;,null,&quot;task&quot;,&quot;yellow&quot;],
+	[&quot;[[dropdowns|https://docs.handsontable.com/0.34.0/demo-dropdown.html]]&quot;,null,null,null],
+	[&quot;[[autocomplete|https://docs.handsontable.com/0.34.0/demo-autocomplete.html]]&quot;,null,null,null],
+	[&quot;{{PoG{possible to use without the `columns` param?}}}&quot;,null,null,null]
+],
+&quot;options&quot;:{}}
+!%/</pre>
+</div>
 <div title="MainMenu" modifier="Yakov Litvin" created="201705252001" modified="201705252001" changecount="2">
 <pre></pre>
 </div>
