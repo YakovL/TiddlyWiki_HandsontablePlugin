@@ -3,7 +3,7 @@
 |Docs        |https://yakovl.github.io/TiddlyWiki_HandsontablePlugin/|
 |Source      |https://github.com/YakovL/TiddlyWiki_HandsontablePlugin/blob/master/HandsontablePlugin.js|
 |Author      |Yakov Litvin|
-|Version     |0.3.7|
+|Version     |0.3.8|
 |Status      |Stable, useful enough to use in production, but needs some improvements|
 |Initial prototype|[[by Vincent Yeh|http://twve.tiddlyspot.com/#HandsontablePlugin]]|
 |License     |[[MIT|https://github.com/YakovL/TiddlyWiki_YL_ExtensionsCollection/blob/master/Common%20License%20(MIT)]] (see also "The MIT License" below for Handsontable)|
@@ -169,6 +169,7 @@ and if the text ends with {{{|}}}, extra linebreak is added (not to hurt a table
 }}}
 
 !! Changelog
+* 0.3.8 (18.02.2020) – prevented click, double-click propagation from handsontable; added hotkeys for adding/deleting columns ({{{ctrl}}} + {{{shift}}} + {{{i}}}/{{{enter}}}/{{{delete}}})
 * 0.3.7 (10.12.2017, ~) – done some refactoring, fixed the bug that created a tiddler with emply name in a complicated case and prevented TW from saving
 * 0.3.6 (14.09.2017, ~) – added the {{{wikified}}} option
 * 0.3.5 (1.09.2017, ~) – introduced hotkeys for adding/removing/rearranging rows for non-granular data, added docs about using for granular data (one row per tiddler), added a warning when no place to save data is specified
@@ -511,19 +512,18 @@ else
 			if(dataAndOptionsSection.indexOf(separator) == 0)
 				dataAndOptionsSection = tiddler.title + dataAndOptionsSection;
 			dataAndOptionsText = store.getTiddlerText(dataAndOptionsSection);
-			dataAndOptions	   = dataAndOptionsText ?
+			dataAndOptions     = dataAndOptionsText ?
 				JSON.parse(dataAndOptionsText) : {};
-			storedData	   = dataAndOptions.data;
-			storedOptions	   = dataAndOptions.options;
+			storedData         = dataAndOptions.data;
+			storedOptions      = dataAndOptions.options;
 		}
 		if(filter) {
 			containers = containers || ["!"];
 			var tiddlers = store.filterTiddlers(filter),
-				granulatedData = this.getGranulatedData(tiddlers,containers);
+				granulatedData = this.getGranulatedData(tiddlers, containers);
 		}
 
 		var container = this.createContainer(place);
-//console.log("container: ",container);
 
 		// collect options
 		var options = storedOptions || {},
@@ -544,43 +544,46 @@ else
 
 		// store options and other stuff in container and init handsontable
 		if(filter) {
-			jQuery(container).data("containers",containers);
-			jQuery(container).data("tiddlers",tiddlers);
-			jQuery(container).data("tiddlersFilter",filter);
+			jQuery(container).data("containers", containers)
+			jQuery(container).data("tiddlers", tiddlers)
+			jQuery(container).data("tiddlersFilter", filter)
 		}
 //# implement saving options in the case of containers as well
-		jQuery(container).data("sourceTiddler",tiddler.title);
-		jQuery(container).data("dataAndOptionsSection",dataAndOptionsSection);
-		jQuery(container).data("data",data); // write-only: use to update HOT without creating a new one
-		jQuery(container).data("hotOptions",options);
-		jQuery(container).data("nonStoredOptions",nonStoredOptions);
+		jQuery(container).data("sourceTiddler", tiddler.title)
+		jQuery(container).data("dataAndOptionsSection", dataAndOptionsSection)
+		jQuery(container).data("data", data) // write-only: use to update HOT without creating a new one
+		jQuery(container).data("hotOptions", options)
+		jQuery(container).data("nonStoredOptions", nonStoredOptions)
+
+		jQuery(container).on('click', function(e) { if(e.stopPropagation) e.stopPropagation() })
+		jQuery(container).on('dblclick', function(e) { if(e.stopPropagation) e.stopPropagation() })
 
 //console.log("handler launched 1");
 //try {
-		var handsontable = new Handsontable(container,options);
+		var handsontable = new Handsontable(container, options)
 //} catch(e) {
 //	console.log("error with creating handsontable, container is",container,"; options is ",options,"exception is ",e.message);
 //};
 //##1
 console.log("handler, handsontable is",handsontable); // can refreshing ~detach this?
-		jQuery(container).data("handsontable",handsontable);
+		jQuery(container).data("handsontable", handsontable)
 //var hotBack = jQuery(container).data("handsontable");
 //console.log("handler launched 3, hotBack is",hotBack);
 
-		handsontable.addHook('beforeKeyDown',this.allowBrowserTabSwitch);
+		handsontable.addHook('beforeKeyDown', this.allowBrowserTabSwitch)
 //# ask/see source if this is the same as Handsontable.hooks.add(..,..,hotInstance)
 
 //# temporal simplification
-if(filter) return;
+if(filter) return
 
 		// save data to tiddler when a row/column is created/removed as well
-		handsontable.addHook('afterRemoveCol',this.saveToTiddler);
-		handsontable.addHook('afterRemoveRow',this.saveToTiddler);
-		handsontable.addHook('afterCreateCol',this.saveToTiddler);
-		handsontable.addHook('afterCreateRow',this.saveToTiddler);
-		handsontable.addHook('afterRowMove',this.saveToTiddler);
-		// automatically add/remove empty rows/columns
-		handsontable.addHook('beforeKeyDown',this.expandCollapseOrRearrange);
+		handsontable.addHook('afterRemoveCol', this.saveToTiddler)
+		handsontable.addHook('afterRemoveRow', this.saveToTiddler)
+		handsontable.addHook('afterCreateCol', this.saveToTiddler)
+		handsontable.addHook('afterCreateRow', this.saveToTiddler)
+		handsontable.addHook('afterRowMove',   this.saveToTiddler)
+		// add/remove/move rows/columns (automatically for empty; by hotkeys)
+		handsontable.addHook('beforeKeyDown', this.expandCollapseOrRearrange)
 	},
 	refresh: function(element) {
 
