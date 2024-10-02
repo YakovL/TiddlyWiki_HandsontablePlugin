@@ -660,20 +660,20 @@ if(!handsontable) console.log("filter is ",filter,", containers are ",containers
 	//# ? when a row is removed/a title is deleted in it, do ? with the tiddler
 	//# how to detect moved rows? which row was removed? probably requires extra hooks
 	},
-	convertDataToJSON: function(data)
-	{
+	convertDataToJSON: function(data) {
 //# for a nicer storage format: turn edited numbers into numbers, not strings:
 //  http://stackoverflow.com/questions/18302890/json-stringify-input-values-as-numbers
 //  and also turn nulls into ""
 
 		return JSON.stringify(data, "", 4)
-			.replace(/\n {8}([^\n]*)\n {4}\]/gm, function($0, $1){
-				return $1 + "]";
-			})
+			// prevent %/ from showing hidden section
+			.replace(/%\//g, '%\\/')
+			// compactify formatting
+			.replace(/\n {8}([^\n]*)\n {4}\]/gm, function($0, $1) { return $1 + "]" })
 			.replace(/\n {8}/gm, "")
-			.replace(/^ {4}/gm, "\t");
+			.replace(/^ {4}/gm, "\t")
 	},
-	saveToTiddler: function(change,source)
+	saveToTiddler: function(change, source)
 	{
 		// get tiddler, HOT options
 		var tiddlyContainer = this.container.parentElement,
