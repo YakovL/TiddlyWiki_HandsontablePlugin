@@ -488,17 +488,17 @@ else
 	handler: function(place,macroName,params,wikifier,paramString,tiddler)
 	{
 		// parse macro params
-		var pParams    = paramString.parseParams("dataAndOptions",null,true,false, true),
-			filter     = getParam(pParams,"filter"),
-			containers = pParams[0]["containers"], //containers:"!" ":slice" ...
-			macroData  = JSON.parse(getParam(pParams,"data","[ [\"\"] ]")),
-			macroOptions, //= JSON.parse(getParam(pParams,"options","{}"))
-			showWikified = getFlag(pParams,"wikified",paramString.match( /\swikified(\s|$)/gm));
-		eval("macroOptions = "+getParam(pParams,"options","{}"));
-		var dataAndOptionsSection = getParam(pParams,"dataAndOptions",""),
-			separator  = config.textPrimitives.sectionSeparator,
-			dataAndOptionsText, dataAndOptions, storedData, storedOptions,
-			nonStoredOptions = macroOptions;
+		var pParams    = paramString.parseParams("dataAndOptions", null, true, false, true),
+		    filter     = getParam(pParams, "filter"),
+		    containers = pParams[0]["containers"], //containers:"!" ":slice" ...
+		    macroData  = JSON.parse(getParam(pParams, "data", "[ [\"\"] ]")),
+		    macroOptions, //= JSON.parse(getParam(pParams, "options", "{}"))
+		    showWikified = getFlag(pParams, "wikified", paramString.match( /\swikified(\s|$)/gm));
+		eval("macroOptions = "+getParam(pParams, "options", "{}"));
+		var dataAndOptionsSection = getParam(pParams, "dataAndOptions", ""),
+		    separator  = config.textPrimitives.sectionSeparator,
+		    dataAndOptionsText, dataAndOptions, storedData, storedOptions,
+		    nonStoredOptions = macroOptions;
 		merge(nonStoredOptions, this.defaultOptions, true);
 		// priority is: storedOptions (highest), macroOptions, defaultOptions
 		if(showWikified)
@@ -533,11 +533,11 @@ else
 			data = [ ["Warning: no tiddler, section or containers for storing data were specified, your edits won't be saved"] ];
 		if(!filter)
 			nonStoredOptions.manualRowMove = true;
-		merge(options,nonStoredOptions,true);
-		merge(options,{
+		merge(options, nonStoredOptions, true);
+		merge(options, {
 			data:        data,
 			afterChange: filter ? this.saveToContainers : this.saveToTiddler
-		},true);
+		}, true);
 
 //# change stuff below for the case of aggregated data (both storedOptions and nonStoredOptions may still be useful)
 //   colHeaders: ["","[[not wikified..]]","..but custom","headers",""],
@@ -586,29 +586,27 @@ if(filter) return
 		handsontable.addHook('beforeKeyDown', this.expandCollapseOrRearrange)
 	},
 	refresh: function(element) {
-
-		var filter = jQuery(element).data("tiddlersFilter");
+		var filter = jQuery(element).data("tiddlersFilter")
 		// refreshing handsontable for non-granulated data doesn't seem
 		// to be useful (unless we need to use several HOTs for the same data):
-		if(!filter) return;
+		if(!filter) return
 
-		var tiddlers	   = store.filterTiddlers(filter),
-			containers	   = jQuery(element).data("containers"),
-			granulatedData = this.getGranulatedData(tiddlers,containers),
-			handsontable   = jQuery(element).data("handsontable"),
+		var tiddlers     = store.filterTiddlers(filter),
+		    containers   = jQuery(element).data("containers"),
+		    handsontable = jQuery(element).data("handsontable"),
 //##2
-			data	   = jQuery(element).data("data"),
-			freshData	   = this.getGranulatedData(tiddlers,containers);
+		    data         = jQuery(element).data("data"),
+		    freshData    = this.getGranulatedData(tiddlers, containers)
 console.log("refresher: handsontable is ",handsontable); // here it is sometimes undefined
 if(!handsontable) console.log("filter is ",filter,", containers are ",containers,", data is ",data);
 
 		// set data equal to freshData so that it is still the same array (data = freshData doesn't suffice)
-		data.splice(0,data.length);	//empty data
-		data.push.apply(data,freshData);//copy freshData to data
+		data.splice(0, data.length)      //empty data
+		data.push.apply(data, freshData) //copy freshData to data
 		// may use data.splice(0, data.length, ...freshData); but requires ES2015
 //console.log("refresher, data is",data);
 
-		handsontable.render();
+		handsontable.render()
 	},
 	saveToContainers: function(change,source)
 	{
@@ -738,17 +736,15 @@ if(this.mergeCells)
 	// macroName and paramString contain all but <<, >> and whitespace between macroName and paramString
 	// also, wikifier.tiddler, .source and .output (and others) may be used
 	}
-};
+}
 
 // for research purposes:
 config.macros.testIfWikifierIsShared = {
-	handler: function(place,macroName,params,wikifier,paramString,tiddler)
-	{
-		if(!window.wikifiersCollection)
-			window.wikifiersCollection = [];
-		window.wikifiersCollection.push(wikifier);
+	handler: function(place, macroName, params, wikifier, paramString, tiddler) {
+		window.wikifiersCollection = window.wikifiersCollection || []
+		window.wikifiersCollection.push(wikifier)
 	}
-};
+}
 //}}}
 /***
 !!! config.extensions.Handsontable (deprecated tools from the first version)
