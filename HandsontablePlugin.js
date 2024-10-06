@@ -638,12 +638,11 @@ if(!handsontable) console.log("filter is ",filter,", containers are ",containers
 					store.setValue(tid, partName, value);
 					break; default:
 					//# warn somehow?
-					break;
 				}
 			}
 		}
-		if(change || change === 0) // a real change
-			store.setDirty(true);
+		// a real change
+		if(change || change === 0) store.setDirty(true);
 
 	// advanced implementation:
 	//# add new tiddlers
