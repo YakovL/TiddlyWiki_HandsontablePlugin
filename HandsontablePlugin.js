@@ -287,29 +287,26 @@ config.macros.handsontable = {
 		//manualRowResize: true,
 		manualColumnResize: true
 	},
-	createContainer: function(place,id)
-	{
+	createContainer: function(place, id) {
 		// create a container with a unique id so that 2 HOTs don't interfere
 		var containerId = id || ("handsontable" + Math.floor(Math.random()*1000));
 		while(document.getElementById(containerId))
 			containerId += Math.floor(Math.random()*10);
-		return createTiddlyElement(place,"div",containerId,null,null,{
+		return createTiddlyElement(place, "div", containerId, null, null, {
 			refresh: "macro", macroName: "handsontable" // enable refreshing
 		});
 	},
-	wikifiedRenderer: function(instance, td, row, col, prop, value, cellProperties)
-	{
-			Handsontable.Dom.empty(td);
-			wikify(""+(value || ""),td);
+	wikifiedRenderer: function(instance, td, row, col, prop, value, cellProperties) {
+		Handsontable.Dom.empty(td);
+		wikify("" + (value || ""), td);
 		return td;
 	},
-	allowBrowserTabSwitch: function(event){
+	allowBrowserTabSwitch: function(event) {
 		var $tab = 9;
 		if(event.which == $tab && event.ctrlKey)
 			Handsontable.Dom.stopImmediatePropagation(event);
 	},
-	expandCollapseOrRearrange: function(event)
-	{
+	expandCollapseOrRearrange: function(event) {
 if(event.target == document.body)
 	console.log('targeted document body');
 else
@@ -405,10 +402,10 @@ else
 		}
 		if(event.which == $delete && event.ctrlKey) {
 			if(shouldApplyToRows)
-				for(var j = 0; j < maxSelRow - minSelRow+1; j++)
+				for(var j = 0; j < maxSelRow - minSelRow + 1; j++)
 					this.alter('remove_row', minSelRow);
 			else
-				for(var j = 0; j < maxSelCol - minSelCol+1; j++)
+				for(var j = 0; j < maxSelCol - minSelCol + 1; j++)
 					this.alter('remove_col', minSelCol);
 			wasChanged = true;
 			preventDefault = true;
@@ -453,19 +450,16 @@ else
 		// prevent stuff not meant to happen when using the hotkeys (page scroll etc)
 		if(preventDefault) {
 			Handsontable.Dom.stopImmediatePropagation(event);
-			if(event.preventDefault)
-				event.preventDefault();
+			if(event.preventDefault) event.preventDefault();
 		}
 		if(wasChanged) store.setDirty(true);
 //# why is this needed? is it? doesn't afterChange fire?
 	},
-	getGranulatedData: function(tiddlers,containers)
-	{
+	getGranulatedData: function(tiddlers, containers) {
 //# if containers/tiddlers is not an Array, ...
-		return tiddlers.map(function(tiddler,i,arr){
+		return tiddlers.map(function(tiddler, i, arr) {
 			var tidData = [], i, partName;
-			for(i = 0; i < containers.length; i++)
-			{
+			for(i = 0; i < containers.length; i++) {
 // looks like .getData from InsertEditable/SetManagerPlugin may be used here
 				partName = containers[i].substr(1);
 				switch(containers[i][0]) {
@@ -474,11 +468,11 @@ else
 					break;case "t":
 					tidData.push(tiddler.text);
 					break;case "#":
-					tidData.push(tiddler.getSection(partName||""));
+					tidData.push(tiddler.getSection(partName || ""));
 					break;case ":":
-					tidData.push(tiddler.getSlice(partName||""));
+					tidData.push(tiddler.getSlice(partName || ""));
 					break;case "@":
-					tidData.push(store.getValue(tiddler,partName)||"") ;
+					tidData.push(store.getValue(tiddler, partName) || "") ;
 					break;default:
 					tidData.push("");
 				}
@@ -486,8 +480,7 @@ else
 			return tidData;
 		});
 	},
-	handler: function(place,macroName,params,wikifier,paramString,tiddler)
-	{
+	handler: function(place, macroName, params, wikifier, paramString, tiddler) {
 		// parse macro params
 		var pParams    = paramString.parseParams("dataAndOptions", null, true, false, true),
 		    filter     = getParam(pParams, "filter"),
@@ -609,8 +602,7 @@ if(!handsontable) console.log("filter is ",filter,", containers are ",containers
 
 		handsontable.render()
 	},
-	saveToContainers: function(change,source)
-	{
+	saveToContainers: function(change, source) {
 		var data	= this.getData(),
 			container	= this.container.parentElement,
 			filter	= jQuery(container).data("tiddlersFilter"),
@@ -631,20 +623,20 @@ if(!handsontable) console.log("filter is ",filter,", containers are ",containers
 				{
 					case "!": // title
 					if(!value || tid.title == value) break;
-					store.saveTiddler(tid,value); // requires my fix to .sT
-					break;case "t": // text
+					store.saveTiddler(tid, value); // requires my fix to .sT
+					break; case "t": // text
 					if(tid.text == value) break;
-					store.saveTiddler(tid,null,value);
-					break;case "#":
-					tid.setSection(partName,value);
+					store.saveTiddler(tid, null, value);
+					break; case "#":
+					tid.setSection(partName, value);
 					//if(tid.getSection(partName)!=value) store.notify(tid.title,true);
-					break;case ":":
-					tid.setSlice(partName,value);
+					break; case ":":
+					tid.setSlice(partName, value);
 					//if(tid.getSlice(partName)!=) store.notify(tid.title,true);
-					break;case "@":
+					break; case "@":
 					//if(store.getValue(tid,partName)==value) break;
-					store.setValue(tid,partName,value);
-					break;default:
+					store.setValue(tid, partName, value);
+					break; default:
 					//# warn somehow?
 					break;
 				}
@@ -672,13 +664,13 @@ if(!handsontable) console.log("filter is ",filter,", containers are ",containers
 			.replace(/\n {8}/gm, "")
 			.replace(/^ {4}/gm, "\t")
 	},
-	saveToTiddler: function(change, source)
-	{
+	saveToTiddler: function(change, source) {
 		// get tiddler, HOT options
 		var tiddlyContainer = this.container.parentElement,
 			dataAndOptionsSection = jQuery(tiddlyContainer)
 			.data("dataAndOptionsSection"),
 			nonStoredOptions = jQuery(tiddlyContainer).data("nonStoredOptions"),
+
 			re = new RegExp("^(.*)" + config.textPrimitives.sectionSeparator + "(.+)$"),
 			match = re.exec(dataAndOptionsSection),
 			tiddlerNameByMacro = jQuery(tiddlyContainer).data("sourceTiddler"),
@@ -695,7 +687,7 @@ if(!handsontable) console.log("filter is ",filter,", containers are ",containers
 		//# get updated col widths, merged cells, update hotOptions
 
 		var hotOptions = jQuery(tiddlyContainer).data("hotOptions");
-//# this works fine but should be changed not on data change but on merge/unmerge
+//# this works fine but should be changed on merge/unmerge (not on data change)
 if(this.mergeCells)
 	hotOptions.mergeCells = this.mergeCells.mergedCellInfoCollection;
 		// prepare/format data and options for saving
@@ -709,7 +701,7 @@ if(this.mergeCells)
 
 		// determine portion of tiddler's text to update, update tiddler text
 		if(sectionName)
-			tiddler.setHiddenSection(sectionName,fullJSON);
+			tiddler.setHiddenSection(sectionName, fullJSON);
 		else if(tiddlerName != tiddlerNameByMacro)
 			tiddler.text = fullJSON;
 		else
