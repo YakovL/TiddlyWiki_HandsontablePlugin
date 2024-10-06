@@ -3,7 +3,7 @@
 |Docs        |https://yakovl.github.io/TiddlyWiki_HandsontablePlugin/|
 |Source      |https://github.com/YakovL/TiddlyWiki_HandsontablePlugin/blob/master/HandsontablePlugin.js|
 |Author      |Yakov Litvin|
-|Version     |0.3.8|
+|Version     |0.3.9|
 |Status      |Stable, useful enough to use in production, but needs some improvements|
 |Initial prototype|[[by Vincent Yeh|http://twve.tiddlyspot.com/#HandsontablePlugin]]|
 |License     |[[MIT|https://github.com/YakovL/TiddlyWiki_YL_ExtensionsCollection/blob/master/Common%20License%20(MIT)]] (see also "The MIT License" below for Handsontable)|
@@ -169,6 +169,7 @@ and if the text ends with {{{|}}}, extra linebreak is added (not to hurt a table
 }}}
 
 !! Changelog
+* 0.3.9 (9.06.2023) – fixed storage format so that {{{%/}}} in HOT doesn't break (reveal part of) hidden section; updated CSS to follow ColorPalette
 * 0.3.8 (18.02.2020) – prevented click, double-click propagation from handsontable; added hotkeys for adding/deleting columns ({{{ctrl}}} + {{{shift}}} + {{{i}}}/{{{enter}}}/{{{delete}}})
 * 0.3.7 (10.12.2017, ~) – done some refactoring, fixed the bug that created a tiddler with emply name in a complicated case and prevented TW from saving
 * 0.3.6 (14.09.2017, ~) – added the {{{wikified}}} option
@@ -818,6 +819,47 @@ config.extensions.Handsontable = {
 	}
 };
 //}}}
+// /%
+/***
+!HandsontableStyleSheet
+***/
+///*{{{*/
+//.handsontable table td, .darkMode .handsontable th, .darkMode .handsontableInput {
+//  color: [[ColorPalette::Foreground]];
+//}
+//.handsontable table td, .handsontable table td.area {
+//  background: [[ColorPalette::Background]];
+//}
+//.darkMode .handsontable th {
+//  background: [[ColorPalette::TertiaryLight]];
+//}
+//.darkMode .handsontable tbody th.ht__highlight, .darkMode .handsontable thead th.ht__highlight, .darkMode .handsontableInput {
+//  background: [[ColorPalette::TertiaryMid]];
+//}
+//
+//.darkMode .handsontable td, .darkMode .handsontable th {
+//  border-color: [[ColorPalette::TertiaryLight]];
+//}
+///* ideally, make these TertiaryPale – but first make sure the second column and row don't get this */
+//.darkMode .handsontable tr:first-child th, .darkMode .handsontable tr:first-child td,
+//.darkMode .handsontable th:first-child, .darkMode .handsontable th:nth-child(2), .darkMode .handsontable td:first-of-type, .darkMode .handsontable .htNoFrame+th, .darkMode .handsontable .htNoFrame+td, .darkMode .handsontable.htRowHeaders thead tr th:nth-child(2) {
+//  border-color: [[ColorPalette::TertiaryLight]];
+//}
+///*}}}*/
+/***
+!end of HandsontableStyleSheet
+***/
+// %/ //
+//{{{
+;(function() {
+var cssName = "HandsontableStyleSheet",
+	css = store.getTiddlerText("HandsontablePlugin" + "##" + cssName).replace(/^\/\//gm, "");
+css = css.substring(5, css.length - 5); // cut leading \n***/ and trailing /***\n of the section
+config.shadowTiddlers[cssName] = css;
+store.addNotification(cssName, refreshStyles);
+store.addNotification("ColorPalette", function(smth, doc) { refreshStyles(cssName, doc) })
+})();
+//}}}
 /***
 !!! .setHiddenSection helper
 ***/
@@ -896,5 +938,6 @@ var cssName = "handsontable.min.css",
 css = css.substring(5, css.length - 5); // cut leading \n***/ and trailing /***\n of the section
 config.shadowTiddlers[cssName] = css;
 store.addNotification(cssName, refreshStyles);
+store.addNotification("ColorPalette", function(smth, doc) { refreshStyles(cssName, doc) })
 })();
 //}}}
