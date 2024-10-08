@@ -417,8 +417,7 @@ else
 					: event.key == 'End'       ?  data.length-1 - maxSelRow
 					: 0;
 			// prevent shifting to negative indices
-			while(minSelRow + shift < 0)
-				shift++;
+			shift = Math.max(shift, -minSelRow);
 
 			if(shift) {
 				var mover = this.getPlugin('ManualRowMove');
