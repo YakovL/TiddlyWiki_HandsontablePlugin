@@ -302,8 +302,7 @@ config.macros.handsontable = {
 		return td;
 	},
 	allowBrowserTabSwitch: function(event) {
-		var $tab = 9;
-		if(event.which == $tab && event.ctrlKey)
+		if(event.key == 'Tab' && event.ctrlKey)
 			Handsontable.Dom.stopImmediatePropagation(event);
 	},
 	expandCollapseOrRearrange: function(event) {
@@ -312,9 +311,8 @@ if(event.target == document.body)
 else
 	console.log('! targeted not document body');
 
-		var $right = 39, $down = 40, $left = 37, $up = 38,
-			selected = this.getSelected(),
-			isEditMode = this.getActiveEditor().isOpened();
+		var selected = this.getSelected(),
+		    isEditMode = this.getActiveEditor().isOpened();
 		if(isEditMode) return;
 
 		// calc dimensions
@@ -337,11 +335,11 @@ else
 
 		// add rows/columns on going beyond boundaries (by down/right)
 		if(isLastRow) {
-			if(event.which == $down) {
+			if(event.key == 'ArrowDown') {
 				this.alter('insert_row', endRowNum + 1);
 				wasChanged = true;
 			}
-			if(event.which == $up && !isFirstRow) {
+			if(event.key == 'ArrowUp' && !isFirstRow) {
 				noData = true;
 				for(i = 0; i < colsNum; i++)
 					if(data[endRowNum][i])
@@ -354,11 +352,11 @@ else
 			}
 		}
 		if(isLastCol) {
-			if(event.which == $right) {
+			if(event.key == 'ArrowRight') {
 				this.alter('insert_col', endColNum + 1);
 				wasChanged = true;
 			}
-			if(event.which == $left && !isFirstCol) {
+			if(event.key == 'ArrowLeft' && !isFirstCol) {
 				noData = true;
 				for(i = 0; i < rowsNum; i++)
 					if(data[i][endColNum])
@@ -372,13 +370,12 @@ else
 		}
 
 		// handle inserting/deleting rows/columns in the middle
-		var $i = 73, $enter = 13, $delete = 46,
-		    minSelRow = Math.min(startRowNum, endRowNum),
+		var minSelRow = Math.min(startRowNum, endRowNum),
 		    maxSelRow = Math.max(startRowNum, endRowNum),
 		    minSelCol = Math.min(startColNum, endColNum),
 		    maxSelCol = Math.max(startColNum, endColNum);
 		var shouldApplyToRows = !event.shiftKey;
-		if(event.which == $i && event.ctrlKey) {
+		if(event.code == 'KeyI' && event.ctrlKey) {
 			if(shouldApplyToRows) {
 				this.alter('insert_row', minSelRow);
 				this.selectCell(minSelRow, startColNum, minSelRow, endColNum);
@@ -389,7 +386,7 @@ else
 			wasChanged = true;
 			preventDefault = true;
 		}
-		if(event.which == $enter && event.ctrlKey) {
+		if(event.key == 'Enter' && event.ctrlKey) {
 			if(shouldApplyToRows) {
 				this.alter('insert_row', maxSelRow + 1);
 				this.selectCell(maxSelRow + 1, startColNum, maxSelRow + 1, endColNum);
@@ -400,7 +397,7 @@ else
 			wasChanged = true;
 			preventDefault = true;
 		}
-		if(event.which == $delete && event.ctrlKey) {
+		if(event.key == 'Delete' && event.ctrlKey) {
 			if(shouldApplyToRows)
 				for(var j = 0; j < maxSelRow - minSelRow + 1; j++)
 					this.alter('remove_row', minSelRow);
@@ -413,12 +410,11 @@ else
 		// these are ctrl+z-able, according to the tests (made in FF)
 
 		//# rearrange on pressing ctrl+↑/↓/home/end
-		var $home = 36, $end = 35;
 		if(event.ctrlKey) {
-			var shift = event.which == $down ? +1
-					: event.which == $up   ? -1
-					: event.which == $home ? -minSelRow
-					: event.which == $end  ?  data.length-1 - maxSelRow
+			var shift = event.key == 'ArrowDown' ? +1
+					: event.key == 'ArrowUp'   ? -1
+					: event.key == 'Home'      ? -minSelRow
+					: event.key == 'End'       ?  data.length-1 - maxSelRow
 					: 0;
 			// prevent shifting to negative indices
 			while(minSelRow + shift < 0)
